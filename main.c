@@ -8,6 +8,7 @@
 #include <string.h>
 
 #define SHC_BUFFER_SIZE 1024
+#define DELIMITER ' '
 
 const static char* shc_version = "0.1";
 const static char* shc_author = "Jakub Brzazgacz";
@@ -16,13 +17,29 @@ const char* shc_terminal_header = "\nshc> ";
 
 struct Command{
     char commandString[SHC_BUFFER_SIZE];
-    char* commands[1];
+    // char* tokens[];
 };
 
 enum commandID{invald,pwd};
 
 enum commandID findCommand(){
 
+}
+
+int getTokensNumber(char* str){
+    int tokens = 0;
+    if(*str == DELIMITER){
+        while(*str == DELIMITER){
+            str++;
+        }
+    }
+    while(*str != '\0'){
+        if((*(str + 1) == NULL) || (*(str + 1) == DELIMITER)){
+            tokens++;
+        }
+        str++;
+    }
+    return tokens;
 }
 
 char* tokenToString(char* commandString){
@@ -39,17 +56,17 @@ char* tokenToString(char* commandString){
     return NULL;
 }
 
-// @brief Function print info about project
+// @brief Print info about project
 void shc_info(){
     printf("\n//////////////////////////");
-    printf("\nShell written in C");
+    printf("\nShell implemented in C");
     printf("\nVersion - %s", shc_version);
     printf("\nAuthor - %s", shc_author);
     printf("\n//////////////////////////");
 }
 
 // @brief Function to get current path
-// @returns Pointer to string containing full path
+// @returns Pointer to string containing current path
 char* shc_getCurrentPath(){
     char buffer[SHC_BUFFER_SIZE];
     char *pPath = NULL;
@@ -59,13 +76,8 @@ char* shc_getCurrentPath(){
     return pPath;
 }
 
-void shc_putPath(){
-    printf(shc_terminal_header);
-    printf("%s>",shc_getCurrentPath());
-}
-
-// @brief Function to get current full string containing command etc, finished by ENTER
-// @param destination pointer to destination, where the string will be written
+// @brief Function to get string containing command, flags, arguments, etc, finished by clicking ENTER
+// @param destination pointer to destination, where the string will be written with NULL at the end
 // @returns 1 if proper command, meaning finished by clicking enter, -1 otherwise
 int shc_readLine(char* destination){
     int c = getchar();
@@ -84,8 +96,8 @@ int shc_readLine(char* destination){
 // @brief Main loop of Shell
 void shc_loop(){
     struct Command *command = (struct Command *)malloc(sizeof(struct Command));
-    int properCommand = shc_readLine(command->commandString);
-    if(properCommand == 1){
+    int validCommand = shc_readLine(command->commandString);
+    if(validCommand == 1){
         puts("executing process");
     }
     else{
