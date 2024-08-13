@@ -2,7 +2,7 @@
 
 Shell implemented in C
 
-Working with repo, to launch the program:
+I am using gcc compiler and vscode, for now simply open terminal and type
 
-- gcc main.c -o main
+- gcc -I src main.c src/token.c src/command.c -o main
 - ./main.exe

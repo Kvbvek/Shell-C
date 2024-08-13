@@ -5,71 +5,68 @@
 #include <stdio.h>
 #include <dirent.h>
 #include <stdlib.h>
-#include <string.h>
+// #include <string.h>
+
+#include "src/token.h"
+#include "src/command.h"
 
 #define SHC_BUFFER_SIZE 1024
 #define DELIMITER ' '
 
-const static char* shc_version = "0.1";
+const static char* shc_version = "0.2";
 const static char* shc_author = "Jakub Brzazgacz";
 
-const char* shc_terminal_header = "\nshc> ";
+const char* shc_terminal_header = "\nshc> $ ";
 
-struct Command{
-    char commandString[SHC_BUFFER_SIZE];
-    // char* tokens[];
-};
+// ----------------------------- //
+// static int processNumbers;
 
-enum commandID{invald,pwd};
+typedef struct{
+    Command* command;
+    int pid;
+    int ppid;
+} Process;
 
-enum commandID findCommand(){
-
+Process* createProcess(Command* command_, int pid_, int ppid_){
+    if(command_){
+        Process* process = malloc(sizeof(Process));
+        process->ppid = ppid_;
+        process->pid = pid_;
+        process->command = command_;
+        return process;
+    }
+    else{
+        return NULL;
+    }
 }
 
-int getTokensNumber(char* str){
-    int tokens = 0;
-    if(*str == DELIMITER){
-        while(*str == DELIMITER){
-            str++;
-        }
-    }
-    while(*str != '\0'){
-        if((*(str + 1) == NULL) || (*(str + 1) == DELIMITER)){
-            tokens++;
-        }
-        str++;
-    }
-    return tokens;
+void shc_init(){
+    // shc_createProcess()
 }
 
-char* tokenToString(char* commandString){
-    char cmd[10];
-    char* pCmd = cmd;
-    for(int i = 0; i < strlen(commandString) + 1; i++){
-        cmd[i] = *commandString;
-        if(*commandString == ' '){
-            cmd[i] = '\0';
-            return pCmd;
-        }
-        commandString++;
-    }
-    return NULL;
+void killProcess(Process* processToKill){
+    free(processToKill);
 }
+
+// void shc_executeCommand(Command* commandToExecute){
+//     // pointer to function ?? as commands have different execution actions
+// }
+// ----------------------------- //
 
 // @brief Print info about project
 void shc_info(){
-    printf("\n//////////////////////////");
+    printf("\n--------------------------");
     printf("\nShell implemented in C");
     printf("\nVersion - %s", shc_version);
     printf("\nAuthor - %s", shc_author);
-    printf("\n//////////////////////////");
+    printf("\n--------------------------");
 }
 
 // @brief Function to get current path
 // @returns Pointer to string containing current path
 char* shc_getCurrentPath(){
     char buffer[SHC_BUFFER_SIZE];
-    char *pPath = NULL;
+    char* pPath = NULL;
     if(getcwd(buffer, sizeof(buffer)) != NULL){
         pPath = buffer;
     }
@@ -93,17 +90,22 @@ int shc_readLine(char* destination){
     return -1;
 }
 
-// @brief Main loop of Shell
-void shc_loop(){
-    struct Command *command = (struct Command *)malloc(sizeof(struct Command));
-    int validCommand = shc_readLine(command->commandString);
-    if(validCommand == 1){
-        puts("executing process");
+
+void shc_waitForCommand(char* buffer){
+    printf(shc_terminal_header);
+    if(shc_readLine(buffer) == 1){
+        printf("good command");
     }
     else{
-        puts("invalid command");
+        printf("bad command");
     }
-    free(command);
+}
+
+// @brief Main loop of Shell
+void shc_loop(){
+    char* shc_commandLineBuffer = malloc(SHC_BUFFER_SIZE * sizeof(char));
+    shc_waitForCommand(shc_commandLineBuffer);
+    free(shc_commandLineBuffer);
 }
 
 int main(){
