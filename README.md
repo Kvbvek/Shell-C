@@ -1,8 +1,21 @@
-# Shell-C
+# Shell-C  
 
-Shell implemented in C
+A bash similar shell implemented in C
 
-I am using gcc compiler and vscode, for now simply open terminal and type
+## Run Locally  
 
-- gcc -I src main.c src/token.c src/command.c -o main
-- ./main.exe
+Clone the project  
+
+~~~bash  
+  git clone https://github.com/Kvbvek/Shell-C.git
+~~~
+
+Go to the project directory  
+
+~~~bash  
+  cd Shell-C
+~~~
+
+## License  
+
+[MIT](https://choosealicense.com/licenses/mit/)

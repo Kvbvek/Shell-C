@@ -5,7 +5,7 @@ typedef struct{
     char* commandString_;
     // commandCode commandCode_;
     int commandID_;
-    // int (*executeCommand)(int commandID);
+    int (*executeCommand)();
 } Command;
 
 Command* getCommand(char* commandString);
