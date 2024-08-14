@@ -6,6 +6,7 @@
 
 #include "token.h"
 #include "command.h"
+#include "process.h"
 
 #define SHC_BUFFER_SIZE 1024
 
@@ -15,34 +16,12 @@ const static char* shc_author = "Jakub Brzazgacz";
 
 const char* shc_terminal_header = "\nshc> $ ";
 
-// @brief Main loop of Shell
-void shc_loop(){
-    char* shc_commandLineBuffer = malloc(SHC_BUFFER_SIZE * sizeof(char));
-    shc_waitForCommand(shc_commandLineBuffer);
-    Tokens* currTokens = findTokens(shc_commandLineBuffer, delimiter);
-    printf("\n%d",currTokens->numTokens);
-    char** tok = currTokens->tokens;
-    for(int i = 0; i < currTokens->numTokens; i++){
-        printf("\n%s",*tok);
-        tok++;
-    }
-    Command* cmnd = getCommand(*(currTokens->tokens));
-    if(cmnd){
-        printf("\n%d", cmnd->commandID_);
-        printf("\n%s", cmnd->commandString_);
-    }
-    else{
-        printf("invalid command");
-    }
-    free(shc_commandLineBuffer);
-    freeCommand(cmnd);
-    freeTokens(currTokens);
-}
+int processNumbers;
 
 // @brief Print info about project
 void shc_info(){
     printf("\n--------------------------");
-    printf("\nShell implemented in C");
+    printf("\nShell-C");
     printf("\nVersion - %s", shc_version);
     printf("\nAuthor - %s", shc_author);
     printf("\n--------------------------");
@@ -76,12 +55,55 @@ int shc_readLine(char* destination){
     return -1;
 }
 
-void shc_waitForCommand(char* buffer){
+// @brief Waiting for user to type command in terminal
+// @param buffer buffer to store command
+void shc_waitForInput(char* buffer){
     printf(shc_terminal_header);
     if(shc_readLine(buffer) == 1){
-        printf("cmd line read properly");
+        // todo maybe success or smth
     }
     else{
-        printf("error during reading cmd line");
+        printf("\nError during reading cmd line");
     }
+}
+
+// @brief Main loop of Shell
+void shc_loop(){
+    char* shc_commandLineBuffer = malloc(SHC_BUFFER_SIZE * sizeof(char));
+    shc_waitForInput(shc_commandLineBuffer);
+
+    Tokens* currTokens = findTokens(shc_commandLineBuffer, delimiter);
+    // printf("\n Number of tokens - %d",currTokens->numTokens);
+    // char** tok = currTokens->tokens;
+    // for(int i = 0; i < currTokens->numTokens; i++){
+    //     printf("\nToken nr %d - %s", i, *tok);
+    //     tok++;
+    // }
+    Command* cmnd = getCommand(currTokens->tokens[0]);
+    
+    // printf("%d", cmnd->commandID_);
+    cmnd->handleCommand = findCommandHandler(cmnd->commandID_);
+    if(cmnd){
+        processNumbers++;
+        Process* newProcess = createProcess(cmnd,processNumbers,0);
+
+        printf("\nCommand ID - %d", cmnd->commandID_);
+        printf("\nString - %s", cmnd->commandString_);
+        int cmdResult = newProcess->command->handleCommand();
+        printf("\nProcess PID - %d", newProcess->pid);
+        if(cmdResult == 1){
+            printf("\nProcess executed correctly");
+        }
+        else{
+            printf("\nError during execution of process");
+        }
+        free(cmnd);
+        killProcess(newProcess);
+    }
+    else{
+        printf("\nInvalid command");
+    }
+
+    free(shc_commandLineBuffer);
+    freeTokens(currTokens);
 }

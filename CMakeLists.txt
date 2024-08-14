@@ -7,6 +7,8 @@ set(SOURCES
     src/process.c
     src/shc.c
     src/commandHandlers/shc_handler.c
+    src/commandHandlers/exit_handler.c
+    src/commandHandlers/pwd_handler.c
 )
 
 add_executable(Shell-C ${SOURCES} main.c)

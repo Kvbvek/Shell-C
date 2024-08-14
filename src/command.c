@@ -1,6 +1,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include "command.h"
+#include "commandHandlers/command_handlers.h"
 
 #define SHC_COMMANDS_NUMBER 4
 
@@ -25,5 +26,25 @@ Command* getCommand(char* commandString){
 void freeCommand(Command* command){
     if(command){
         free(command);
+    }
+}
+
+intFvoidPointer findCommandHandler(int commandID_){
+    switch (commandID_){
+    case 0:
+        return NULL;
+        break;
+    case 1:
+        return handleCommand_shc;
+        break;
+    case 2:
+        return handleCommand_pwd;
+        break;
+    case 3:
+        return handleCommand_exit;
+        break;
+    default:
+        return NULL;
+        break;
     }
 }

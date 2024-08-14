@@ -3,8 +3,7 @@
 // Last modified 09.08.2024
 
 // #include <stdio.h>
-// // #include <dirent.h>
-#include <stdlib.h>
+// #include <dirent.h>
 #include "src/shc.h"
 
 int main(){

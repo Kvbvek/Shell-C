@@ -1,14 +1,17 @@
 #ifndef COMMAND_H
 #define COMMAND_H
 
+typedef int (*intFvoidPointer)();
+
 typedef struct{
     char* commandString_;
     // commandCode commandCode_;
     int commandID_;
-    int (*executeCommand)();
+    intFvoidPointer handleCommand;
 } Command;
 
 Command* getCommand(char* commandString);
 void freeCommand(Command* command);
+intFvoidPointer findCommandHandler(int commandID_);
 
 #endif

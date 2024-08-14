@@ -2,6 +2,6 @@
 #include "shc_handler.h"
 
 int handleCommand_shc(){
-    printf("Unfortunately it is not bash...");
+    printf("\nUnfortunately it's not bash...");
     return 1;
 }
