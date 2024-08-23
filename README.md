@@ -1,4 +1,4 @@
-# Shell-C  
+# Shell-C (in progress...)
 
 A bash similar shell implemented in C
 
