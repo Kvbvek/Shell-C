@@ -5,7 +5,6 @@ typedef int (*intFvoidPointer)();
 
 typedef struct{
     char* commandString_;
-    // commandCode commandCode_;
     int commandID_;
     intFvoidPointer handleCommand;
 } Command;

@@ -3,5 +3,5 @@
 
 int handleCommand_shc(){
     printf("\nUnfortunately it's not bash...");
-    return 1;
+    return 0;
 }

@@ -16,8 +16,6 @@ const static char* shc_author = "Jakub Brzazgacz";
 
 const char* shc_terminal_header = "\nshc> $ ";
 
-int processNumbers;
-
 // @brief Print info about project
 void shc_info(){
     printf("\n--------------------------");
@@ -38,16 +36,16 @@ void shc_info(){
 //     return pPath;
 // }
 
-// @brief Function to get string containing command, flags, arguments, etc, finished by clicking ENTER
+// @brief Function to get string containing command, flags, arguments, etc, finished by clicking ENTER (10 value)
 // @param destination pointer to destination, where the string will be written with NULL at the end
-// @returns 1 if proper command, meaning finished by clicking enter, -1 otherwise
+// @returns 0 if proper command, meaning finished by clicking enter, -1 otherwise
 int shc_readLine(char* destination){
     int c = getchar();
     for(int i = 0; i < SHC_BUFFER_SIZE; i++){
         *destination = c;
         if(*destination == 10){
             *destination = '\0';
-            return 1;
+            return 0;
         }
         destination++;
         c = getchar();
@@ -57,53 +55,63 @@ int shc_readLine(char* destination){
 
 // @brief Waiting for user to type command in terminal
 // @param buffer buffer to store command
-void shc_waitForInput(char* buffer){
+int shc_waitForInput(char* buffer){
     printf(shc_terminal_header);
-    if(shc_readLine(buffer) == 1){
-        // todo maybe success or smth
+    if(shc_readLine(buffer) == 0){
+        printf("Succesfully readed");
+        return 0;
     }
     else{
-        printf("\nError during reading cmd line");
+        printf("Error during reading cmd line");
+        return -1;
     }
 }
 
+
 // @brief Main loop of Shell
-void shc_loop(){
-    char* shc_commandLineBuffer = malloc(SHC_BUFFER_SIZE * sizeof(char));
-    shc_waitForInput(shc_commandLineBuffer);
-
-    Tokens* currTokens = findTokens(shc_commandLineBuffer, delimiter);
-    // printf("\n Number of tokens - %d",currTokens->numTokens);
-    // char** tok = currTokens->tokens;
-    // for(int i = 0; i < currTokens->numTokens; i++){
-    //     printf("\nToken nr %d - %s", i, *tok);
-    //     tok++;
-    // }
-    Command* cmnd = getCommand(currTokens->tokens[0]);
-    
-    // printf("%d", cmnd->commandID_);
-    cmnd->handleCommand = findCommandHandler(cmnd->commandID_);
-    if(cmnd){
-        processNumbers++;
-        Process* newProcess = createProcess(cmnd,processNumbers,0);
-
-        printf("\nCommand ID - %d", cmnd->commandID_);
-        printf("\nString - %s", cmnd->commandString_);
-        int cmdResult = newProcess->command->handleCommand();
-        printf("\nProcess PID - %d", newProcess->pid);
-        if(cmdResult == 1){
-            printf("\nProcess executed correctly");
-        }
-        else{
-            printf("\nError during execution of process");
-        }
-        free(cmnd);
-        killProcess(newProcess);
+int shc_loop(){
+    int processNumbers = 0;
+    Command* shc_cmnd = getCommand("shc");
+    Process* shc_Process = createProcess(shc_cmnd,++processNumbers,0);
+    if(shc_Process == NULL){
+        exit(0);
     }
     else{
-        printf("\nInvalid command");
+        processNumbers++;
     }
 
-    free(shc_commandLineBuffer);
-    freeTokens(currTokens);
+    while(1){
+        char* shc_commandLineBuffer = malloc(SHC_BUFFER_SIZE * sizeof(char));
+        if(shc_commandLineBuffer == NULL){
+            return -1;
+        }
+        if(shc_waitForInput(shc_commandLineBuffer) == -1){
+            return -1;
+        }
+        Tokens* currTokens = findTokens(shc_commandLineBuffer, delimiter);
+        if(currTokens == NULL){
+            return -1;
+        }
+        Command* cmnd = getCommand(currTokens->tokens[0]); // for now command only one word command and then flags (todo)
+        if(cmnd){
+            cmnd->handleCommand = findCommandHandler(cmnd->commandID_);
+            processNumbers++;
+            Process* newProcess = createProcess(cmnd,processNumbers,shc_Process->pid);
+            int cmdResult = newProcess->command->handleCommand();
+            if(cmdResult == 0){
+                // printf("\nProcess handled correctly, command executed");
+            }
+            else{
+                // printf("\nError during execution of process");
+            }
+            killProcess(newProcess);
+            freeCommand(cmnd);
+        }
+        else{
+            printf("\nInvalid command");
+        }
+
+        freeTokens(currTokens);
+        free(shc_commandLineBuffer);
+    }
 }

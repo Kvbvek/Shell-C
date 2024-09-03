@@ -2,7 +2,7 @@
 #define TOKEN_H
 
 typedef struct{
-    int numTokens; // Number of tokens
+    int numTokens;
     char** tokens; // Array of pointers to tokens
 } Tokens;
 

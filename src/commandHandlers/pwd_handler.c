@@ -3,5 +3,5 @@
 
 int handleCommand_pwd(){ //todo
     printf("\nHandling command pwd...");
-    return 1;
+    return 0;
 }

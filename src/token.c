@@ -22,7 +22,7 @@ Tokens* findTokens(const char* str, const char* delimiter){
     Tokens *result = malloc(sizeof(Tokens));
     if(!result){
         free(strCopy);
-        return NULL; // Memory allocation failed
+        return NULL;
     }
 
     result->numTokens = count;
@@ -30,7 +30,7 @@ Tokens* findTokens(const char* str, const char* delimiter){
     if(!result->tokens){
         free(result);
         free(strCopy);
-        return NULL; // Memory allocation failed
+        return NULL;
     }
 
     count = 0;
@@ -45,7 +45,7 @@ Tokens* findTokens(const char* str, const char* delimiter){
 
 void freeTokens(Tokens* tokens){
     if(tokens){
-        free(tokens->tokens); // Free the array of pointers
-        free(tokens);         // Free the structure itself
+        free(tokens->tokens);
+        free(tokens);
     }
 }
