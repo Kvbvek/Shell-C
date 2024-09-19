@@ -28,7 +28,7 @@ void freeCommand(Command* command){
 }
 
 intFvoidPointer findCommandHandler(int commandID_){
-    // few commands for now so simple switch case, in the future some faster searching maybe
+    // few commands for now so simple switch case, in the future if many commands some faster searching maybe
     switch (commandID_){
         case 0:
             return handleCommand_shc;

@@ -1,6 +1,5 @@
 #include "shc.h"
 #include <stdio.h>
-// #include <dirent.h>
 #include <stdlib.h>
 // #include <string.h>
 
@@ -25,17 +24,6 @@ void shc_info(){
     printf("\n--------------------------");
 }
 
-// @brief Function to get current path
-// @returns Pointer to string containing current path
-// char* shc_getCurrentPath(){
-//     char buffer[SHC_BUFFER_SIZE];
-//     char* pPath = NULL;
-//     if(getcwd(buffer, sizeof(buffer)) != NULL){
-//         pPath = buffer;
-//     }
-//     return pPath;
-// }
-
 // @brief Function to get string containing command, flags, arguments, etc, finished by clicking ENTER (10 value)
 // @param destination pointer to destination, where the string will be written with NULL at the end
 // @returns 0 if proper command, meaning finished by clicking enter, -1 otherwise
@@ -58,7 +46,7 @@ int shc_readLine(char* destination){
 int shc_waitForInput(char* buffer){
     printf(shc_terminal_header);
     if(shc_readLine(buffer) == 0){
-        printf("Succesfully readed");
+        // printf("Succesfully readed");
         return 0;
     }
     else{
@@ -70,14 +58,16 @@ int shc_waitForInput(char* buffer){
 
 // @brief Main loop of Shell
 int shc_loop(){
+    int pid_nr = 0;
     int processNumbers = 0;
     Command* shc_cmnd = getCommand("shc");
-    Process* shc_Process = createProcess(shc_cmnd,++processNumbers,0);
+    Process* shc_Process = createProcess(shc_cmnd,pid_nr + 1,0);
     if(shc_Process == NULL){
         exit(0);
     }
     else{
         processNumbers++;
+        pid_nr++;
     }
 
     while(1){
@@ -96,10 +86,12 @@ int shc_loop(){
         if(cmnd){
             cmnd->handleCommand = findCommandHandler(cmnd->commandID_);
             processNumbers++;
-            Process* newProcess = createProcess(cmnd,processNumbers,shc_Process->pid);
+            pid_nr++;
+            Process* newProcess = createProcess(cmnd,pid_nr,shc_Process->pid);
             int cmdResult = newProcess->command->handleCommand();
             if(cmdResult == 0){
                 // printf("\nProcess handled correctly, command executed");
+                processNumbers--;
             }
             else{
                 // printf("\nError during execution of process");
